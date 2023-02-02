@@ -5,6 +5,8 @@
   align-items: center;
   padding: 6rem;
   min-height: 100vh;
+  color: black;
+  background-color: white;
 }
 
 .description {
@@ -44,6 +46,9 @@
   grid-template-columns: repeat(4, minmax(25%, auto));
   width: var(--max-width);
   max-width: 100%;
+  list-style: none;
+  margin-left: 0;
+  padding-left: 0;
 }
 
 .card {

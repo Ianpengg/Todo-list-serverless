@@ -1,11 +1,48 @@
 import Head from 'next/head'
 import Image from 'next/image'
-import { Inter } from '@next/font/google'
-import styles from '@/styles/Home.module.css'
+import Todolist from '@/components/Todolist';
+import React, { useState, useEffect } from 'react'
+const listallitems = 'https://yxyoxpxrbi.execute-api.us-east-1.amazonaws.com/dev/todos';
+const createitem = 'https://yxyoxpxrbi.execute-api.us-east-1.amazonaws.com/dev/todos';
 
-const inter = Inter({ subsets: ['latin'] })
+export async function getServerSideProps() {
+  const res = await fetch(listallitems);
+  const data = await res.json();
+  return {
+    props: {
+      data
+    }
+  }
+}
 
-export default function Home() {
+export default function Home({data}) {
+  data  = data['Items']
+  const [newTask, setNewTask] = useState({});
+
+  const handleChange = (event) => {
+    setNewTask({ ...newTask, 'text': event.target.value });
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+      const response = await fetch(listallitems, {
+        method: "POST",
+        headers: {
+          // 'Access-Control-Allow-Origin': '*',
+          // 'Access-Control-Allow-Credentials': true,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newTask),
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Success:', data);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+    }
+
   return (
     <>
       <Head>
@@ -14,110 +51,69 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={styles.main}>
-        <div className={styles.description}>
-          <p>
-            Get started by editing&nbsp;
-            <code className={styles.code}>pages/index.js</code>
-          </p>
-          <div>
-            <a
-              href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              By{' '}
-              <Image
-                src="/vercel.svg"
-                alt="Vercel Logo"
-                className={styles.vercelLogo}
-                width={100}
-                height={24}
-                priority
-              />
-            </a>
-          </div>
-        </div>
-
-        <div className={styles.center}>
-          <Image
-            className={styles.logo}
-            src="/next.svg"
-            alt="Next.js Logo"
-            width={180}
-            height={37}
-            priority
+      <div className="flex flex-col items-center justify-center min-h-screen bg-slate-200">
+        <Todolist 
+          data={data} 
+          handleSubmit={handleSubmit}
+          handleChange={handleChange}
+          newTask={newTask}
           />
-          <div className={styles.thirteen}>
-            <Image
-              src="/thirteen.svg"
-              alt="13"
-              width={40}
-              height={31}
-              priority
-            />
-          </div>
-        </div>
-
-        <div className={styles.grid}>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Docs <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Find in-depth information about Next.js features and&nbsp;API.
-            </p>
-          </a>
-
-          <a
-            href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Learn <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Learn about Next.js in an interactive course with&nbsp;quizzes!
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Templates <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Discover and deploy boilerplate example Next.js&nbsp;projects.
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Deploy <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Instantly deploy your Next.js site to a shareable URL
-              with&nbsp;Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
+      </div>
+      
     </>
   )
 }
+
+// const Home = () => {
+//     const [item, setItem] = useState('');
+//     const [tasks, setTasks] = useState([]);
+
+    // useEffect(() => {
+    //     fetch(listallitems)
+    //     .then(res => res.json())
+
+    //     .then(json => {
+    //         const tasks = json.map(item => item.Task)
+    //         setTasks(tasks);
+    //     })
+    //     console.log(json)
+    // }, []);
+
+//     const handleSubmit = (e) => {
+//         e.preventDefault();
+
+//         fetch(listallitems, {
+//             method: 'POST',
+//             headers: {
+//               'Access-Control-Allow-Origin': '*',
+//               'Access-Control-Allow-Credentials': true,
+//               'Accept': 'application/json',
+//               'Content-Type': 'application/json'
+//             },
+//             body: JSON.stringify({task: item})
+//         });
+
+//         setTasks([...tasks, item]);
+//         setItem('');
+//         e.target.reset();
+//     };
+
+//     const handleChange = (e) => {
+//         setItem(e.target.value);
+//     };
+
+//     const todos = tasks.map((value, index) => <li key={ index }>{ value }</li>);
+
+//     return (
+//         <div>
+//             <form onSubmit={ handleSubmit } >
+//                 <label>Task</label>
+//                 <input type="text" onChange={ handleChange } value={ item } />
+//                 <button>Enter a todo</button>
+//             </form>
+//             <ul>{ todos }</ul>
+//         </div>
+//     );
+// };
+
+// export default Home;
