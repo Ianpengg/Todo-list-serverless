@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react'
 
-
-
-
-export default function Todolist({data, handleSubmit, handleChange, newTask}) {
+export default function Todolist({data, handleSubmit, handleChange, handleDelete}) {
   
   return (
     <div className="flex flex-col gap-4 p-4 bg-slate-300">
@@ -26,7 +23,9 @@ export default function Todolist({data, handleSubmit, handleChange, newTask}) {
           return (
               <li key={id} className=" pl-4 p-4 w-full mb-2 bg-gray-200 flex flex-row justify-between items-center">
                 <p>{text}</p>
-                <button className="w-10 h-8  rounded-lg bg-red-600 text-gray-100 font-semibold uppercase hover:scale-105 transition-transform ease-out duration-200">del</button>
+                <button
+                onClick={() => handleDelete(id)}
+                className="w-10 h-8  rounded-lg bg-red-600 text-gray-100 font-semibold uppercase hover:scale-105 transition-transform ease-out duration-200">del</button>
               </li>
               )
         })}

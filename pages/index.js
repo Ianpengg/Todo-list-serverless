@@ -2,12 +2,14 @@ import Head from 'next/head'
 import Image from 'next/image'
 import Todolist from '@/components/Todolist';
 import React, { useState, useEffect } from 'react'
-const listallitems = 'https://yxyoxpxrbi.execute-api.us-east-1.amazonaws.com/dev/todos';
-const createitem = 'https://yxyoxpxrbi.execute-api.us-east-1.amazonaws.com/dev/todos';
+import Router from 'next/router';
+const defaultEndpoint = 'https://yxyoxpxrbi.execute-api.us-east-1.amazonaws.com/dev/todos';
+const corsURL = 'https://cors-anywhere.herokuapp.com/';
 
 export async function getServerSideProps() {
-  const res = await fetch(listallitems);
+  const res = await fetch(defaultEndpoint);
   const data = await res.json();
+  console.log(data)
   return {
     props: {
       data
@@ -16,32 +18,53 @@ export async function getServerSideProps() {
 }
 
 export default function Home({data}) {
-  data  = data['Items']
+  data = data['Items']
   const [newTask, setNewTask] = useState({});
-
+  const [updated, setUpdated] = useState(false);
   const handleChange = (event) => {
     setNewTask({ ...newTask, 'text': event.target.value });
   };
-
+  
+  const handleDelete = async (id) => {
+    const response = await fetch(`${corsURL}${defaultEndpoint}/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    .then(response => {
+      setUpdated(true);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+  } 
   const handleSubmit = async (event) => {
     event.preventDefault();
-      const response = await fetch(listallitems, {
+      const response = await fetch(`${corsURL}${defaultEndpoint}`, {
         method: "POST",
         headers: {
-          // 'Access-Control-Allow-Origin': '*',
-          // 'Access-Control-Allow-Credentials': true,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(newTask),
       })
       .then(response => response.json())
       .then(data => {
+        setUpdated(true);
+        setNewTask({text: ""});
         console.log('Success:', data);
       })
       .catch(error => {
         console.error('Error:', error);
       });
     }
+    
+
+    useEffect(() => {
+      if (updated) {
+        window.location.reload();;
+      }
+    }, [updated]);
 
   return (
     <>
@@ -51,69 +74,16 @@ export default function Home({data}) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="flex flex-col items-center justify-center min-h-screen bg-slate-200">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-slate-200"> 
         <Todolist 
           data={data} 
           handleSubmit={handleSubmit}
           handleChange={handleChange}
+          handleDelete={handleDelete}
           newTask={newTask}
           />
       </div>
-      
     </>
   )
 }
 
-// const Home = () => {
-//     const [item, setItem] = useState('');
-//     const [tasks, setTasks] = useState([]);
-
-    // useEffect(() => {
-    //     fetch(listallitems)
-    //     .then(res => res.json())
-
-    //     .then(json => {
-    //         const tasks = json.map(item => item.Task)
-    //         setTasks(tasks);
-    //     })
-    //     console.log(json)
-    // }, []);
-
-//     const handleSubmit = (e) => {
-//         e.preventDefault();
-
-//         fetch(listallitems, {
-//             method: 'POST',
-//             headers: {
-//               'Access-Control-Allow-Origin': '*',
-//               'Access-Control-Allow-Credentials': true,
-//               'Accept': 'application/json',
-//               'Content-Type': 'application/json'
-//             },
-//             body: JSON.stringify({task: item})
-//         });
-
-//         setTasks([...tasks, item]);
-//         setItem('');
-//         e.target.reset();
-//     };
-
-//     const handleChange = (e) => {
-//         setItem(e.target.value);
-//     };
-
-//     const todos = tasks.map((value, index) => <li key={ index }>{ value }</li>);
-
-//     return (
-//         <div>
-//             <form onSubmit={ handleSubmit } >
-//                 <label>Task</label>
-//                 <input type="text" onChange={ handleChange } value={ item } />
-//                 <button>Enter a todo</button>
-//             </form>
-//             <ul>{ todos }</ul>
-//         </div>
-//     );
-// };
-
-// export default Home;
