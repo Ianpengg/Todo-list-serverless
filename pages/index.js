@@ -1,8 +1,7 @@
 import Head from 'next/head'
-import Image from 'next/image'
 import Todolist from '@/components/Todolist';
 import React, { useState, useEffect } from 'react'
-import Router from 'next/router';
+
 const defaultEndpoint = 'https://yxyoxpxrbi.execute-api.us-east-1.amazonaws.com/dev/todos';
 const corsURL = 'https://cors-anywhere.herokuapp.com/';
 
@@ -59,7 +58,6 @@ export default function Home({data}) {
       });
     }
     
-
     useEffect(() => {
       if (updated) {
         window.location.reload();;
