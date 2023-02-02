@@ -5,6 +5,7 @@ frameworkVersion: ">=2.24.0"
 provider:
   name: aws
   runtime: python3.8
+  region: us-east-1
   environment:
     DYNAMODB_TABLE: ${self:service}-${sls:stage}
   iam:
