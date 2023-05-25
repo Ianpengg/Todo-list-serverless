@@ -2,7 +2,7 @@ import Head from 'next/head'
 import Todolist from '@/components/Todolist';
 import React, { useState, useEffect } from 'react'
 
-const defaultEndpoint = 'https://yxyoxpxrbi.execute-api.us-east-1.amazonaws.com/dev/todos';
+const defaultEndpoint = '';
 const corsURL = 'https://cors-anywhere.herokuapp.com/';
 
 export async function getServerSideProps() {
